@@ -77,6 +77,7 @@ import org.grakovne.lissen.ui.components.ImageFetcher.Companion.LocalOnlyKey
 import org.grakovne.lissen.ui.components.withScrollbar
 import org.grakovne.lissen.ui.extensions.withMinimumTime
 import org.grakovne.lissen.ui.screens.settings.composable.SettingsTopAppBar
+import org.grakovne.lissen.ui.theme.tvFocusIndication
 import org.grakovne.lissen.viewmodel.CachingModelView
 import org.grakovne.lissen.viewmodel.PlayerViewModel
 
@@ -365,7 +366,7 @@ private fun CachedItemChapterComposable(
               .size(48.dp)
               .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null,
+                indication = tvFocusIndication(),
                 onClick = {
                   scope.launch {
                     dropCache(

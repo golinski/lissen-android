@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import org.grakovne.lissen.ui.components.LissenModalBottomSheet
+import org.grakovne.lissen.ui.theme.tvFocusIndication
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,7 +108,7 @@ fun CommonSettingsItemComposable(
                   .fillMaxWidth()
                   .clickable(
                     enabled = item.enabled,
-                    indication = null,
+                    indication = tvFocusIndication(),
                     interactionSource = remember { MutableInteractionSource() },
                   ) {
                     activeItem = item

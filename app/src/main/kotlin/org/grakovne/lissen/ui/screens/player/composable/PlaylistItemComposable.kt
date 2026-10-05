@@ -33,6 +33,7 @@ import org.grakovne.lissen.R
 import org.grakovne.lissen.domain.BookChapterState
 import org.grakovne.lissen.domain.PlayingChapter
 import org.grakovne.lissen.ui.extensions.formatTime
+import org.grakovne.lissen.ui.theme.tvFocusIndication
 import kotlin.math.ceil
 
 @Composable
@@ -76,7 +77,7 @@ fun PlaylistItemComposable(
         .padding(vertical = 2.dp)
         .clickable(
           onClick = onClick,
-          indication = null,
+          indication = tvFocusIndication(),
           interactionSource = remember { MutableInteractionSource() },
         ),
   ) {

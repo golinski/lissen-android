@@ -96,6 +96,7 @@ import org.grakovne.lissen.ui.screens.library.composables.SeriesComposable
 import org.grakovne.lissen.ui.screens.library.composables.fallback.LibraryFallbackComposable
 import org.grakovne.lissen.ui.screens.library.composables.placeholder.LibraryPlaceholderComposable
 import org.grakovne.lissen.ui.screens.library.composables.placeholder.RecentBooksPlaceholderComposable
+import org.grakovne.lissen.ui.theme.tvFocusIndication
 import org.grakovne.lissen.viewmodel.CachingModelView
 import org.grakovne.lissen.viewmodel.LibrarySettingsViewModel
 import org.grakovne.lissen.viewmodel.LibraryViewModel
@@ -345,7 +346,7 @@ fun LibraryScreen(
                     Modifier
                       .clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
+                        indication = tvFocusIndication(),
                       ) { preferredLibraryExpanded = true }
                       .fillMaxWidth()
                   }
@@ -493,7 +494,7 @@ fun LibraryScreen(
                           Modifier
                             .clickable(
                               interactionSource = remember { MutableInteractionSource() },
-                              indication = null,
+                              indication = tvFocusIndication(),
                             ) { preferredLibraryExpanded = true }
                             .fillMaxWidth(),
                       ) {

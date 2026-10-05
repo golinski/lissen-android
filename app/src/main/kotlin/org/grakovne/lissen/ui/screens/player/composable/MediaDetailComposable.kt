@@ -47,6 +47,7 @@ import org.grakovne.lissen.ui.components.LissenModalBottomSheet
 import org.grakovne.lissen.ui.extensions.formatTime
 import org.grakovne.lissen.ui.navigation.AppNavigationService
 import org.grakovne.lissen.ui.screens.player.InfoRow
+import org.grakovne.lissen.ui.theme.tvFocusIndication
 import org.grakovne.lissen.viewmodel.PlayerViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -124,7 +125,7 @@ fun MediaDetailComposable(
                 .padding(vertical = 4.dp)
                 .clickable(
                   interactionSource = remember { MutableInteractionSource() },
-                  indication = null,
+                  indication = tvFocusIndication(),
                 ) {
                   onDismissRequest()
                   navController.showLinkedSearch(series.name)

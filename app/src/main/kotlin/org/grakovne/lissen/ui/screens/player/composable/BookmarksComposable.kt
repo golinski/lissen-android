@@ -55,6 +55,7 @@ import org.grakovne.lissen.common.buildBookmarkTitle
 import org.grakovne.lissen.common.withHaptic
 import org.grakovne.lissen.ui.components.LissenModalBottomSheet
 import org.grakovne.lissen.ui.extensions.formatTime
+import org.grakovne.lissen.ui.theme.tvFocusIndication
 import org.grakovne.lissen.viewmodel.PlayerViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -220,7 +221,7 @@ private fun BookmarkRow(
   val view: View = LocalView.current
   val enabled = onClick != null
   val interactionSource = remember { MutableInteractionSource() }
-  val indication = if (enabled && showRipple) LocalIndication.current else null
+  val indication = if (enabled && showRipple) LocalIndication.current else tvFocusIndication()
 
   Row(
     modifier =

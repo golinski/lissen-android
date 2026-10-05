@@ -90,6 +90,7 @@ import org.grakovne.lissen.ui.screens.player.composable.placeholder.PlayingQueue
 import org.grakovne.lissen.ui.screens.player.composable.placeholder.TrackControlPlaceholderComposable
 import org.grakovne.lissen.ui.screens.player.composable.placeholder.TrackDetailsPlaceholderComposable
 import org.grakovne.lissen.ui.screens.player.composable.provideChapterNumberTitle
+import org.grakovne.lissen.ui.theme.tvFocusIndication
 import org.grakovne.lissen.viewmodel.CachingModelView
 import org.grakovne.lissen.viewmodel.PlaybackSettingsViewModel
 import org.grakovne.lissen.viewmodel.PlayerViewModel
@@ -660,7 +661,7 @@ fun InfoRow(
             else -> {
               base.clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null,
+                indication = tvFocusIndication(),
               ) { onClick() }
             }
           }
