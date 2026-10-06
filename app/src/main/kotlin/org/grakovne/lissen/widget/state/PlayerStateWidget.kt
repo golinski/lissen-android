@@ -2,6 +2,13 @@ package org.grakovne.lissen.widget.state
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.FastForward
+import androidx.compose.material.icons.rounded.FastRewind
+import androidx.compose.material.icons.rounded.PauseCircleFilled
+import androidx.compose.material.icons.rounded.PlayCircleFilled
+import androidx.compose.material.icons.rounded.SkipNext
+import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -41,7 +48,6 @@ import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.text.FontFamily.Companion.SansSerif
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
-import androidx.media3.session.R
 import org.grakovne.lissen.R.drawable
 import org.grakovne.lissen.ui.theme.LightBackground
 import org.grakovne.lissen.ui.theme.MediumBackground
@@ -179,7 +185,7 @@ class PlayerStateWidget : GlanceAppWidget() {
         ) {
           StateWidgetControlButton(
             size = 36.dp,
-            icon = ImageProvider(R.drawable.media3_icon_previous),
+            icon = Icons.Rounded.SkipPrevious,
             contentColor = GlanceTheme.colors.onBackground,
             onClick =
               actionRunCallback<PreviousChapterActionCallback>(
@@ -191,7 +197,7 @@ class PlayerStateWidget : GlanceAppWidget() {
 
           StateWidgetControlButton(
             size = 36.dp,
-            icon = ImageProvider(rewindIcon),
+            icon = Icons.Rounded.FastRewind,
             contentColor = GlanceTheme.colors.onBackground,
             onClick =
               actionRunCallback<RewindActionCallback>(
@@ -204,9 +210,9 @@ class PlayerStateWidget : GlanceAppWidget() {
           StateWidgetControlButton(
             icon =
               if (isPlaying) {
-                ImageProvider(R.drawable.media3_icon_pause)
+                Icons.Rounded.PauseCircleFilled
               } else {
-                ImageProvider(R.drawable.media3_icon_play)
+                Icons.Rounded.PlayCircleFilled
               },
             size = 48.dp,
             contentColor = GlanceTheme.colors.onBackground,
@@ -222,7 +228,7 @@ class PlayerStateWidget : GlanceAppWidget() {
           )
 
           StateWidgetControlButton(
-            icon = ImageProvider(forwardIcon),
+            icon = Icons.Rounded.FastForward,
             size = 36.dp,
             contentColor = GlanceTheme.colors.onBackground,
             onClick =
@@ -234,7 +240,7 @@ class PlayerStateWidget : GlanceAppWidget() {
           )
 
           StateWidgetControlButton(
-            icon = ImageProvider(R.drawable.media3_icon_next),
+            icon = Icons.Rounded.SkipNext,
             size = 36.dp,
             contentColor = GlanceTheme.colors.onBackground,
             onClick =
@@ -255,9 +261,6 @@ class PlayerStateWidget : GlanceAppWidget() {
       ?: this
 
   companion object {
-    val rewindIcon = R.drawable.media3_icon_rewind
-    val forwardIcon = R.drawable.media3_icon_fast_forward
-
     val bookIdKey = ActionParameters.Key<String>("book_id")
 
     val coverPath = stringPreferencesKey("player_widget_key_cover")
