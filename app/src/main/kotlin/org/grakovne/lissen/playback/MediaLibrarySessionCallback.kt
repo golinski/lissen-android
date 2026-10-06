@@ -9,6 +9,7 @@ import android.util.LruCache
 import android.view.KeyEvent
 import android.view.KeyEvent.KEYCODE_MEDIA_NEXT
 import android.view.KeyEvent.KEYCODE_MEDIA_PREVIOUS
+import androidx.annotation.DrawableRes
 import androidx.annotation.OptIn
 import androidx.core.net.toUri
 import androidx.media3.common.C
@@ -45,6 +46,7 @@ import org.grakovne.lissen.playback.service.PlaybackService
 import org.grakovne.lissen.playback.service.PlaybackSynchronizationService
 import org.grakovne.lissen.util.listenableFuture
 import timber.log.Timber
+import androidx.media3.session.R as Media3R
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.cancellation.CancellationException
@@ -165,7 +167,7 @@ class MediaLibrarySessionCallback
     private val bookmarkCommand = SessionCommand(BOOKMARK_COMMAND, Bundle.EMPTY)
 
     private data class MediaButtonSpec(
-      val icon: Icon,
+      @DrawableRes val icon: Int,
       val command: SessionCommand,
       val displayName: String,
       val slot: Int,
@@ -176,37 +178,37 @@ class MediaLibrarySessionCallback
 
       return listOf(
         MediaButtonSpec(
-          icon = SKIP_BACK_ICONS[seekTime.rewind] ?: Icon(CommandButton.ICON_SKIP_BACK),
+          icon = SeekButtonIcons.back(seekTime.rewind),
           command = rewindCommand,
           displayName = "Rewind",
           slot = CommandButton.SLOT_BACK,
         ),
         MediaButtonSpec(
-          icon = SKIP_FORWARD_ICONS[seekTime.forward] ?: Icon(CommandButton.ICON_SKIP_FORWARD),
+          icon = SeekButtonIcons.forward(seekTime.forward),
           command = forwardCommand,
           displayName = "Forward",
           slot = CommandButton.SLOT_FORWARD,
         ),
         MediaButtonSpec(
-          icon = Icon(CommandButton.ICON_PREVIOUS),
+          icon = Media3R.drawable.media3_icon_previous,
           command = prevChapterCommand,
           displayName = "Previous Chapter",
           slot = CommandButton.SLOT_OVERFLOW,
         ),
         MediaButtonSpec(
-          icon = Icon(CommandButton.ICON_NEXT),
+          icon = Media3R.drawable.media3_icon_next,
           command = nextChapterCommand,
           displayName = "Next Chapter",
           slot = CommandButton.SLOT_OVERFLOW,
         ),
         MediaButtonSpec(
-          icon = if (speedConfirmation) speedIcon(mediaRepository.playbackSpeed.value) else Icon(CommandButton.ICON_PLAYBACK_SPEED),
+          icon = if (speedConfirmation) speedIcon(mediaRepository.playbackSpeed.value) else Media3R.drawable.media3_icon_playback_speed,
           command = speedCommand,
           displayName = "Playback speed",
           slot = CommandButton.SLOT_OVERFLOW,
         ),
         MediaButtonSpec(
-          icon = if (bookmarkConfirmation) Icon(CommandButton.ICON_CHECK_CIRCLE_UNFILLED) else Icon(CommandButton.ICON_BOOKMARK_UNFILLED),
+          icon = if (bookmarkConfirmation) Media3R.drawable.media3_icon_check_circle_unfilled else Media3R.drawable.media3_icon_bookmark_unfilled,
           command = bookmarkCommand,
           displayName = "Create bookmark",
           slot = CommandButton.SLOT_OVERFLOW,
@@ -215,10 +217,9 @@ class MediaLibrarySessionCallback
     }
 
     private fun MediaButtonSpec.toCommandButton(): CommandButton =
-      when (icon) {
-        is Icon.Media3 -> CommandButton.Builder(icon.id)
-        is Icon.Res -> CommandButton.Builder(CommandButton.ICON_UNDEFINED).setCustomIconResId(icon.id)
-      }.setSessionCommand(command)
+      CommandButton.Builder(CommandButton.ICON_UNDEFINED)
+        .setCustomIconResId(icon)
+        .setSessionCommand(command)
         .setDisplayName(displayName)
         .setEnabled(true)
         .setSlots(slot)
@@ -502,48 +503,17 @@ class MediaLibrarySessionCallback
       private val REFRESH_TIMEOUT = 2_000.milliseconds
       private val BUTTON_FEEDBACK_DURATION = 3_000.milliseconds
 
-      sealed interface Icon {
-        val id: Int
-
-        @JvmInline
-        value class Media3(
-          override val id: Int,
-        ) : Icon
-
-        @JvmInline
-        value class Res(
-          override val id: Int,
-        ) : Icon
-      }
-
-      fun Icon(value: Int): Icon = Icon.Media3(value)
-
       private val SPEED_ICONS =
         mapOf(
-          1.0f to Icon(CommandButton.ICON_PLAYBACK_SPEED_1_0),
-          1.2f to Icon(CommandButton.ICON_PLAYBACK_SPEED_1_2),
-          1.5f to Icon(CommandButton.ICON_PLAYBACK_SPEED_1_5),
-          2.0f to Icon(CommandButton.ICON_PLAYBACK_SPEED_2_0),
-          3.0f to Icon.Res(R.drawable.ic_playback_speed_3_0),
+          1.0f to Media3R.drawable.media3_icon_playback_speed_1_0,
+          1.2f to Media3R.drawable.media3_icon_playback_speed_1_2,
+          1.5f to Media3R.drawable.media3_icon_playback_speed_1_5,
+          2.0f to Media3R.drawable.media3_icon_playback_speed_2_0,
+          3.0f to R.drawable.ic_playback_speed_3_0,
         )
 
-      private fun speedIcon(speed: Float) = SPEED_ICONS[speed] ?: Icon(CommandButton.ICON_PLAYBACK_SPEED)
-
-      private val SKIP_BACK_ICONS =
-        mapOf(
-          5 to Icon(CommandButton.ICON_SKIP_BACK_5),
-          10 to Icon(CommandButton.ICON_SKIP_BACK_10),
-          15 to Icon(CommandButton.ICON_SKIP_BACK_15),
-          30 to Icon(CommandButton.ICON_SKIP_BACK_30),
-        )
-
-      private val SKIP_FORWARD_ICONS =
-        mapOf(
-          5 to Icon(CommandButton.ICON_SKIP_FORWARD_5),
-          10 to Icon(CommandButton.ICON_SKIP_FORWARD_10),
-          15 to Icon(CommandButton.ICON_SKIP_FORWARD_15),
-          30 to Icon(CommandButton.ICON_SKIP_FORWARD_30),
-        )
+      @DrawableRes
+      private fun speedIcon(speed: Float) = SPEED_ICONS[speed] ?: Media3R.drawable.media3_icon_playback_speed
     }
   }
 

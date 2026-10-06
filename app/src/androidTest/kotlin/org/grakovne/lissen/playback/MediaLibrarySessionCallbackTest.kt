@@ -10,6 +10,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.CommandButton
+import androidx.media3.session.R
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
@@ -511,8 +512,8 @@ class MediaLibrarySessionCallbackTest {
     verify(timeout = 2_000) {
       session.setMediaButtonPreferences(
         match<List<CommandButton>> {
-          it[0].icon == CommandButton.ICON_SKIP_BACK_10 &&
-            it[1].icon == CommandButton.ICON_SKIP_FORWARD_30
+          it[0].iconResId == R.drawable.media3_icon_skip_back_10 &&
+            it[1].iconResId == R.drawable.media3_icon_skip_forward_30
         },
       )
     }
@@ -522,8 +523,8 @@ class MediaLibrarySessionCallbackTest {
     verify(timeout = 2_000) {
       session.setMediaButtonPreferences(
         match<List<CommandButton>> {
-          it[0].icon == CommandButton.ICON_SKIP_BACK_15 &&
-            it[1].icon == CommandButton.ICON_SKIP_FORWARD_5
+          it[0].iconResId == R.drawable.media3_icon_skip_back_15 &&
+            it[1].iconResId == R.drawable.media3_icon_skip_forward_5
         },
       )
     }
@@ -536,7 +537,7 @@ class MediaLibrarySessionCallbackTest {
     }
     verify(timeout = 2_000) {
       session.setMediaButtonPreferences(
-        match<List<CommandButton>> { it[4].icon == CommandButton.ICON_PLAYBACK_SPEED },
+        match<List<CommandButton>> { it[4].iconResId == R.drawable.media3_icon_playback_speed },
       )
     }
 
@@ -551,15 +552,15 @@ class MediaLibrarySessionCallbackTest {
     verify(exactly = 1) { mediaRepository.setPlaybackSpeed(1.2f) }
     verify(timeout = 2_000) {
       session.setMediaButtonPreferences(
-        match<List<CommandButton>> { it[4].icon == CommandButton.ICON_PLAYBACK_SPEED_1_2 },
+        match<List<CommandButton>> { it[4].iconResId == R.drawable.media3_icon_playback_speed_1_2 },
       )
     }
     verify(timeout = 6_000, ordering = Ordering.ORDERED) {
       session.setMediaButtonPreferences(
-        match<List<CommandButton>> { it[4].icon == CommandButton.ICON_PLAYBACK_SPEED_1_2 },
+        match<List<CommandButton>> { it[4].iconResId == R.drawable.media3_icon_playback_speed_1_2 },
       )
       session.setMediaButtonPreferences(
-        match<List<CommandButton>> { it[4].icon == CommandButton.ICON_PLAYBACK_SPEED },
+        match<List<CommandButton>> { it[4].iconResId == R.drawable.media3_icon_playback_speed },
       )
     }
   }
@@ -570,7 +571,7 @@ class MediaLibrarySessionCallbackTest {
 
     val buttons = result.mediaButtonPreferences!!
     assertEquals(6, buttons.size)
-    assertEquals(CommandButton.ICON_BOOKMARK_UNFILLED, buttons.last().icon)
+    assertEquals(R.drawable.media3_icon_bookmark_unfilled, buttons.last().iconResId)
     assertTrue(result.availableSessionCommands.contains(bookmarkCommand))
   }
 
@@ -592,8 +593,8 @@ class MediaLibrarySessionCallbackTest {
     verify(timeout = 2_000) {
       session.setMediaButtonPreferences(
         match<List<CommandButton>> {
-          it.last().icon ==
-            CommandButton.ICON_CHECK_CIRCLE_UNFILLED
+          it.last().iconResId ==
+            R.drawable.media3_icon_check_circle_unfilled
         },
       )
     }
@@ -608,8 +609,8 @@ class MediaLibrarySessionCallbackTest {
     verify(timeout = 6_000) {
       session.setMediaButtonPreferences(
         match<List<CommandButton>> {
-          it.last().icon ==
-            CommandButton.ICON_BOOKMARK_UNFILLED
+          it.last().iconResId ==
+            R.drawable.media3_icon_bookmark_unfilled
         },
       )
     }
@@ -625,7 +626,7 @@ class MediaLibrarySessionCallbackTest {
     coVerify(exactly = 1) { mediaRepository.createBookmark(any()) }
     verify(exactly = 0) {
       session.setMediaButtonPreferences(
-        match<List<CommandButton>> { it.last().icon != CommandButton.ICON_BOOKMARK_UNFILLED },
+        match<List<CommandButton>> { it.last().iconResId != R.drawable.media3_icon_bookmark_unfilled },
       )
     }
   }
@@ -638,8 +639,8 @@ class MediaLibrarySessionCallbackTest {
     verify(timeout = 2_000) {
       session.setMediaButtonPreferences(
         match<List<CommandButton>> {
-          it.last().icon ==
-            CommandButton.ICON_CHECK_CIRCLE_UNFILLED
+          it.last().iconResId ==
+            R.drawable.media3_icon_check_circle_unfilled
         },
       )
     }

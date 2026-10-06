@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
@@ -43,6 +44,7 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.media3.session.R
 import org.grakovne.lissen.R.drawable
+import org.grakovne.lissen.playback.SeekButtonIcons
 import org.grakovne.lissen.ui.theme.LightBackground
 import org.grakovne.lissen.ui.theme.MediumBackground
 import org.grakovne.lissen.widget.bitmapFromFile
@@ -89,6 +91,8 @@ class PlayerStateWidget : GlanceAppWidget() {
           }
 
       val isPlaying = state[isPlaying] ?: false
+      val rewindInterval = state[rewindSeconds]
+      val forwardInterval = state[forwardSeconds]
 
       Column(
         modifier =
@@ -191,14 +195,14 @@ class PlayerStateWidget : GlanceAppWidget() {
 
           StateWidgetControlButton(
             size = 36.dp,
-            icon = ImageProvider(rewindIcon),
+            icon = ImageProvider(SeekButtonIcons.back(rewindInterval)),
             contentColor = GlanceTheme.colors.onBackground,
             onClick =
               actionRunCallback<RewindActionCallback>(
                 actionParametersOf(bookIdKey to bookId),
               ),
             modifier = GlanceModifier.defaultWeight(),
-            contentDescription = context.getString(org.grakovne.lissen.R.string.a11y_rewind),
+            contentDescription = context.getString(org.grakovne.lissen.R.string.a11y_rewind_seconds, rewindInterval),
           )
 
           StateWidgetControlButton(
@@ -222,7 +226,7 @@ class PlayerStateWidget : GlanceAppWidget() {
           )
 
           StateWidgetControlButton(
-            icon = ImageProvider(forwardIcon),
+            icon = ImageProvider(SeekButtonIcons.forward(forwardInterval)),
             size = 36.dp,
             contentColor = GlanceTheme.colors.onBackground,
             onClick =
@@ -230,7 +234,7 @@ class PlayerStateWidget : GlanceAppWidget() {
                 actionParametersOf(bookIdKey to bookId),
               ),
             modifier = GlanceModifier.defaultWeight(),
-            contentDescription = context.getString(org.grakovne.lissen.R.string.a11y_fast_forward),
+            contentDescription = context.getString(org.grakovne.lissen.R.string.a11y_fast_forward_seconds, forwardInterval),
           )
 
           StateWidgetControlButton(
@@ -255,9 +259,6 @@ class PlayerStateWidget : GlanceAppWidget() {
       ?: this
 
   companion object {
-    val rewindIcon = R.drawable.media3_icon_rewind
-    val forwardIcon = R.drawable.media3_icon_fast_forward
-
     val bookIdKey = ActionParameters.Key<String>("book_id")
 
     val coverPath = stringPreferencesKey("player_widget_key_cover")
@@ -266,6 +267,8 @@ class PlayerStateWidget : GlanceAppWidget() {
     val chapterTitle = stringPreferencesKey("player_widget_key_chapter_title")
 
     val isPlaying = booleanPreferencesKey("player_widget_key_is_playing")
+    val rewindSeconds = intPreferencesKey("player_widget_key_rewind_seconds")
+    val forwardSeconds = intPreferencesKey("player_widget_key_forward_seconds")
   }
 }
 
