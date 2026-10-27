@@ -15,7 +15,11 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import org.grakovne.lissen.channel.common.OperationError
 import org.grakovne.lissen.channel.common.OperationResult
 import org.grakovne.lissen.content.LissenMediaProvider
@@ -452,6 +456,36 @@ class MediaLibraryTreeTest {
 
   @Nested
   inner class RecentCache {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `retries a failed recent fetch even when a playing item is available`() {
+      val scheduler = TestCoroutineScheduler()
+      tree.scope = CoroutineScope(StandardTestDispatcher(scheduler))
+      every { playbackPreferences.getPlayingItem() } returns detailedItem("b1")
+      every { libraryPreferences.getPreferredLibrary() } returns library("lib1")
+      coEvery { mediaProvider.fetchRecentListenedBooks("lib1") } returnsMany
+        listOf(
+          OperationResult.Error(OperationError.NetworkError),
+          OperationResult.Success(listOf(recentBook("b2"))),
+        )
+
+      val first = tree.getChildren("root/recent", 0, 20, session)
+      scheduler.runCurrent()
+      assertEquals(listOf("book/LIBRARY/b1"), first.get().value!!.map { it.mediaId })
+
+      val retry = tree.getChildren("root/recent", 0, 20, session)
+      scheduler.runCurrent()
+      assertEquals(listOf("book/LIBRARY/b1"), retry.get().value!!.map { it.mediaId })
+
+      coVerify(exactly = 2) { mediaProvider.fetchRecentListenedBooks("lib1") }
+      verify(exactly = 1) { session.notifyChildrenChanged("root/recent", 2, null) }
+      verify(exactly = 0) { session.notifyChildrenChanged("root/recent", 1, null) }
+      
+      val cached = tree.getChildren("root/recent", 0, 20, session)
+      scheduler.runCurrent()
+      assertEquals(listOf("book/LIBRARY/b1", "book/LIBRARY/b2"), cached.get().value!!.map { it.mediaId })
+    }
+
     @Test
     fun `serves cached recent items on subsequent calls`() =
       runBlocking {

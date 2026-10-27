@@ -3,6 +3,7 @@ package org.grakovne.lissen.playback
 import android.content.Context
 import android.net.Uri
 import androidx.annotation.OptIn
+import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
@@ -133,7 +134,8 @@ class MediaLibraryTree
     private val recentCacheKey = AtomicReference<String?>(null)
     private val recentFetchInFlight = AtomicBoolean(false)
 
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal var scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private suspend fun libraries(): List<Library> =
       lissenMediaProvider
@@ -444,9 +446,12 @@ class MediaLibraryTree
                         .map { bookItem(it, libraryPreferences.getPreferredLibraryType()) }
                         .toList()
                     },
-                    onFailure = { emptyList() },
+                    onFailure = {
+                      Timber.w("Unable to load recent books for the media tree due to: ${it.message ?: it.code}")
+                      null
+                    },
                   )
-              } ?: emptyList()
+              } ?: return@launch
 
             val merged = immediateItems + networkItems
             recentCacheKey.set(playingItem?.id)
