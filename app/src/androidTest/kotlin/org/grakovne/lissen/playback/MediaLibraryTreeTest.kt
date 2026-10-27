@@ -85,11 +85,11 @@ class MediaLibraryTreeTest {
   }
 
   @Test
-  fun getChildren_root_returnsThreeChildren() =
+  fun getChildren_root_returnsFourChildren() =
     runBlocking {
       val result = tree.getChildren("root", 0, 100, session).get()
       assertEquals(SessionResult.RESULT_SUCCESS, result.resultCode)
-      assertEquals(3, result.value!!.size)
+      assertEquals(4, result.value!!.size)
     }
 
   @Test
@@ -117,7 +117,7 @@ class MediaLibraryTreeTest {
 
       val result = realTree.getChildren("root", 0, 100, session).get()
       assertEquals(SessionResult.RESULT_SUCCESS, result.resultCode)
-      assertEquals(3, result.value!!.size)
+      assertEquals(4, result.value!!.size)
     }
 
   @Test
@@ -168,7 +168,7 @@ class MediaLibraryTreeTest {
           .map { it.mediaId }
           .toSet()
       assertEquals(
-        setOf("root/recent", "root/library", "root/downloads"),
+        setOf("root/recent", "root/new", "root/library", "root/downloads"),
         ids,
       )
     }
@@ -384,7 +384,7 @@ class MediaLibraryTreeTest {
   @Test
   fun getItem_root_returnsRootItem() =
     runBlocking {
-      listOf("root", "root/recent", "root/library", "root/downloads").forEach { path ->
+      listOf("root", "root/recent", "root/new", "root/library", "root/downloads").forEach { path ->
         val item = tree.getItem(path).get()
         assertEquals(SessionResult.RESULT_SUCCESS, item.resultCode)
         assertEquals(path, item.value!!.mediaId)

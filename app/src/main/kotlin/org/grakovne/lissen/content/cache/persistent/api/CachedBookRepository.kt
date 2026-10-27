@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.core.net.toUri
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
+import org.grakovne.lissen.common.LibraryOrderingConfiguration
 import org.grakovne.lissen.common.LibraryOrderingDirection
 import org.grakovne.lissen.common.LibraryOrderingOption
 import org.grakovne.lissen.common.mergeAuthorNames
@@ -138,8 +139,9 @@ class CachedBookRepository
       pageSize: Int,
       libraryType: LibraryType?,
       extraFilter: Pair<String, String>? = null,
+      ordering: LibraryOrderingConfiguration? = null,
     ): List<Book> {
-      val (option, direction) = buildOrdering()
+      val (option, direction) = buildOrdering(ordering ?: preferences.getLibraryOrdering())
 
       val request =
         fetchRequest(libraryId, libraryType, extraFilter)
@@ -611,9 +613,9 @@ class CachedBookRepository
       bookDao.upsertMediaProgress(entity)
     }
 
-    private fun buildOrdering(): Pair<String, String> {
+    private fun buildOrdering(ordering: LibraryOrderingConfiguration = preferences.getLibraryOrdering()): Pair<String, String> {
       val option =
-        when (preferences.getLibraryOrdering().option) {
+        when (ordering.option) {
           LibraryOrderingOption.TITLE -> "title"
           LibraryOrderingOption.AUTHOR -> "author"
           LibraryOrderingOption.CREATED_AT -> "createdAt"
@@ -621,7 +623,7 @@ class CachedBookRepository
         }
 
       val direction =
-        when (preferences.getLibraryOrdering().direction) {
+        when (ordering.direction) {
           LibraryOrderingDirection.ASCENDING -> "asc"
           LibraryOrderingDirection.DESCENDING -> "desc"
         }

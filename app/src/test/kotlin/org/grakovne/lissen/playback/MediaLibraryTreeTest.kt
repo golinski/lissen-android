@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.SystemClock
 import android.text.TextUtils
 import androidx.media3.common.MediaItem
-import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService.MediaLibrarySession
 import androidx.media3.session.SessionError
 import io.mockk.coEvery
@@ -18,6 +17,9 @@ import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.grakovne.lissen.channel.common.OperationError
 import org.grakovne.lissen.channel.common.OperationResult
+import org.grakovne.lissen.common.LibraryOrderingConfiguration
+import org.grakovne.lissen.common.LibraryOrderingDirection
+import org.grakovne.lissen.common.LibraryOrderingOption
 import org.grakovne.lissen.content.LissenMediaProvider
 import org.grakovne.lissen.content.cache.persistent.LocalCacheRepository
 import org.grakovne.lissen.domain.Book
@@ -25,10 +27,8 @@ import org.grakovne.lissen.domain.DetailedItem
 import org.grakovne.lissen.domain.FilterData
 import org.grakovne.lissen.domain.Library
 import org.grakovne.lissen.domain.LibraryType
-import org.grakovne.lissen.domain.MediaProgress
 import org.grakovne.lissen.domain.NamedId
 import org.grakovne.lissen.domain.PagedItems
-import org.grakovne.lissen.domain.PlayingChapter
 import org.grakovne.lissen.domain.RecentBook
 import org.grakovne.lissen.persistence.preferences.LibraryPreferences
 import org.grakovne.lissen.persistence.preferences.PlaybackPreferences
@@ -315,6 +315,38 @@ class MediaLibraryTreeTest {
       val result = tree.getChildren("root/downloads", 0, 20, session).get()
 
       assertEquals(listOf("book/LIBRARY/b1"), result.value!!.map { it.mediaId })
+    }
+  }
+
+  @Nested
+  inner class NewNode {
+    @Test
+    fun `online root includes new between recent and library`() {
+      val result = tree.getChildren("root", 0, 100, session).get()
+      assertEquals(listOf("root/recent", "root/new", "root/library", "root/downloads"), result.value!!.map { it.mediaId })
+    }
+
+    @Test
+    fun `new lists the current library newest first and preserves pagination and type`() {
+      every { libraryPreferences.getPreferredLibrary() } returns library("pod", type = LibraryType.PODCAST)
+      val ordering = LibraryOrderingConfiguration(LibraryOrderingOption.CREATED_AT, LibraryOrderingDirection.DESCENDING)
+      coEvery { mediaProvider.fetchBooks("pod", 10, 2, null, LibraryType.PODCAST, ordering) } returns
+        OperationResult.Success(PagedItems(listOf(book("e1")), currentPage = 2, totalItems = 21))
+
+      val result = tree.getChildren("root/new", 2, 10, session).get()
+
+      assertEquals(listOf("book/PODCAST/e1"), result.value!!.map { it.mediaId })
+      coVerify { mediaProvider.fetchBooks("pod", 10, 2, null, LibraryType.PODCAST, ordering) }
+    }
+
+    @Test
+    fun `new is empty without a current library`() {
+      every { libraryPreferences.getPreferredLibrary() } returns null
+
+      val result = tree.getChildren("root/new", 0, 20, session).get()
+
+      assertTrue(result.value!!.isEmpty())
+      coVerify(exactly = 0) { mediaProvider.fetchBooks(any(), any(), any(), any(), any(), any()) }
     }
   }
 
